@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageLicenseExpression>GPLv3</PackageLicenseExpression>
+    <Description>An AEAD implementation using libsodium.</Description>
+    <Copyright>Copyright(C) 2021 Samuel Lucas</Copyright>
+    <Authors>Samuel Lucas</Authors>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <RootNamespace>ChaCha20BLAKE2</RootNamespace>
+    <AssemblyName>ChaCha20BLAKE2b</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Sodium.Core" Version="1.2.3" />
+  </ItemGroup>
+
+</Project>
