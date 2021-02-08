@@ -22,11 +22,12 @@ namespace ChaCha20BLAKE2
 {
     internal static class KeyDerivation
     {
-        internal static (byte[], byte[]) Derive(byte[] nonce, byte[] key)
+        internal static (byte[] encryptionKey, byte[] macKey) DeriveKeys(byte[] nonce, byte[] inputKeyingMaterial)
         {
-            byte[] salt = GenericHash.Hash(nonce, key: null, Constants.SaltLength);
-            byte[] encryptionKey = GenericHash.Hash(Arrays.Concat(Constants.EncryptInfo, salt), key, Constants.EncryptionKeyLength);
-            byte[] macKey = GenericHash.Hash(Arrays.Concat(Constants.AuthenticateInfo, salt), key, Constants.MacKeyLength);
+            byte[] salt = new byte[Constants.SaltLength];
+            byte[] encryptionKey = GenericHash.HashSaltPersonal(nonce, inputKeyingMaterial, salt, Constants.EncryptionPersonal, Constants.EncryptionKeyLength);
+            salt = Utilities.Increment(salt);
+            byte[] macKey = GenericHash.HashSaltPersonal(nonce, inputKeyingMaterial, salt, Constants.AuthenticationPersonal, Constants.MacKeyLength);
             return (encryptionKey, macKey);
         }
     }

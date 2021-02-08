@@ -37,7 +37,7 @@ namespace ChaCha20BLAKE2
             ParameterValidation.Nonce(nonce, Constants.ChaChaNonceLength);
             ParameterValidation.Key(key, Constants.EncryptionKeyLength);
             additionalData = ParameterValidation.AdditionalData(additionalData);
-            (byte[] encryptionKey, byte[] macKey) = KeyDerivation.Derive(nonce, key);
+            (byte[] encryptionKey, byte[] macKey) = KeyDerivation.DeriveKeys(nonce, key);
             byte[] ciphertext = StreamEncryption.EncryptChaCha20(message, nonce, encryptionKey);
             byte[] tagMessage = Arrays.Concat(additionalData, ciphertext, BitConverter.GetBytes(additionalData.Length), BitConverter.GetBytes(ciphertext.Length));
             byte[] tag = GenericHash.Hash(tagMessage, macKey, Constants.TagLength);
@@ -57,14 +57,13 @@ namespace ChaCha20BLAKE2
             ParameterValidation.Nonce(nonce, Constants.ChaChaNonceLength);
             ParameterValidation.Key(key, Constants.EncryptionKeyLength);
             additionalData = ParameterValidation.AdditionalData(additionalData);
-            (byte[] encryptionKey, byte[] macKey) = KeyDerivation.Derive(nonce, key);
+            (byte[] encryptionKey, byte[] macKey) = KeyDerivation.DeriveKeys(nonce, key);
             byte[] tag = Tag.Read(ciphertext);
             ciphertext = Tag.Remove(ciphertext);
             byte[] tagMessage = Arrays.Concat(additionalData, ciphertext, BitConverter.GetBytes(additionalData.Length), BitConverter.GetBytes(ciphertext.Length));
             byte[] computedTag = GenericHash.Hash(tagMessage, macKey, Constants.TagLength);
             bool validTag = Utilities.Compare(tag, computedTag);
-            if (!validTag) { throw new CryptographicException(); }
-            return StreamEncryption.DecryptChaCha20(ciphertext, nonce, encryptionKey);
+            return !validTag ? throw new CryptographicException() : StreamEncryption.DecryptChaCha20(ciphertext, nonce, encryptionKey);
         }
     }
 }

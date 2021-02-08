@@ -22,13 +22,13 @@ namespace ChaCha20BLAKE2
 {
     internal static class Constants
     {
+        internal const int SaltLength = 16;
         internal const int EncryptionKeyLength = 32;
         internal const int MacKeyLength = 64;
-        internal const int SaltLength = 64;
         internal const int ChaChaNonceLength = 8;
         internal const int XChaChaNonceLength = 24;
         internal const int TagLength = 64;
-        internal static readonly byte[] EncryptInfo = Encoding.UTF8.GetBytes("ChaCha20BLAKE2b.Encrypt");
-        internal static readonly byte[] AuthenticateInfo = Encoding.UTF8.GetBytes("ChaCha20BLAKE2b.Authenticate");
+        internal static readonly byte[] EncryptionPersonal = Encoding.UTF8.GetBytes("ChaCha20.Encrypt");
+        internal static readonly byte[] AuthenticationPersonal = Encoding.UTF8.GetBytes("BLAKE2b.KeyedMAC");
     }
 }
