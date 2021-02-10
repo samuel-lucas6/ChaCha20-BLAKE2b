@@ -4,7 +4,7 @@
 An AEAD implementation using [libsodium](https://doc.libsodium.org/). This library supports both [ChaCha20](https://doc.libsodium.org/advanced/stream_ciphers/chacha20) and [XChaCha20](https://doc.libsodium.org/advanced/stream_ciphers/xchacha20).
 
 ## Should I use this?
-**You should not use this for anything in production yet. This is currently a demo implementation.**
+⚠️**You should NOT use this for anything in production yet. This is currently a demo implementation.**
 
 However, as a demo, this library offers an Encrypt-then-MAC implementation that does several things for you:
 
@@ -99,7 +99,7 @@ internal static readonly byte[] AuthenticationPersonal = Encoding.UTF8.GetBytes(
 ```c#
 byte[] salt = new byte[Constants.SaltLength];
 ```
-2. BLAKE2b-256 is used with the ```nonce``` as the message, the key as the BLAKE2b key, the counter as the salt, and ```Constants.EncryptionPersonal``` as the personalisation parameter to derive a 32 byte encryption key.
+2. BLAKE2b-256 is used, with the nonce as the message, the key as the key, the counter as the salt, and ```Constants.EncryptionPersonal``` as the personalisation parameter, to derive a 32 byte encryption key.
 ```c#
 byte[] encryptionKey = GenericHash.HashSaltPersonal(nonce, inputKeyingMaterial, salt, Constants.EncryptionPersonal, Constants.EncryptionKeyLength);
 ```
@@ -107,7 +107,7 @@ byte[] encryptionKey = GenericHash.HashSaltPersonal(nonce, inputKeyingMaterial, 
 ```c#
 salt = Utilities.Increment(salt);
 ```
-4. BLAKE2b-512 is used with the ```nonce``` as the message, the key as the BLAKE2b key, the counter as the salt, and ```Constants.AuthenticationPersonal``` as the personalisation parameter to derive a 64 byte MAC key.
+4. BLAKE2b-512 is used, with the nonce as the message, the key as the key, the counter as the salt, and ```Constants.AuthenticationPersonal``` as the personalisation parameter, to derive a 64 byte MAC key.
 ```c#
 byte[] macKey = GenericHash.HashSaltPersonal(nonce, inputKeyingMaterial, salt, Constants.AuthenticationPersonal, Constants.MacKeyLength);
 ```
@@ -133,7 +133,7 @@ return Arrays.Concat(ciphertext, tag);
 ```c#
 byte[] salt = new byte[Constants.SaltLength];
 ```
-2. BLAKE2b-256 is used with the ```nonce``` as the message, the key as the BLAKE2b key, the counter as the salt, and ```Constants.EncryptionPersonal``` as the personalisation parameter to derive the 32 byte encryption key.
+2. BLAKE2b-256 is used, with the nonce as the message, the key as the key, the counter as the salt, and ```Constants.EncryptionPersonal``` as the personalisation parameter, to derive the 32 byte encryption key.
 ```c#
 byte[] encryptionKey = GenericHash.HashSaltPersonal(nonce, inputKeyingMaterial, salt, Constants.EncryptionPersonal, Constants.EncryptionKeyLength);
 ```
@@ -141,7 +141,7 @@ byte[] encryptionKey = GenericHash.HashSaltPersonal(nonce, inputKeyingMaterial, 
 ```c#
 salt = Utilities.Increment(salt);
 ```
-4. BLAKE2b-512 is used with the ```nonce``` as the message, the key as the BLAKE2b key, the counter as the salt, and ```Constants.AuthenticationPersonal``` as the personalisation parameter to derive the 64 byte MAC key.
+4. BLAKE2b-512 is used, with the nonce as the message, the key as the key, the counter as the salt, and ```Constants.AuthenticationPersonal``` as the personalisation parameter, to derive the 64 byte MAC key.
 ```c#
 byte[] macKey = GenericHash.HashSaltPersonal(nonce, inputKeyingMaterial, salt, Constants.AuthenticationPersonal, Constants.MacKeyLength);
 ```
