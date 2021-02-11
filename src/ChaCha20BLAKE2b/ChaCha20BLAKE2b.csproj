@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageLicenseExpression>GPLv3</PackageLicenseExpression>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Description>An AEAD implementation using libsodium.</Description>
-    <Copyright>Copyright(C) 2021 Samuel Lucas</Copyright>
+    <Copyright>Copyright (c) 2021 Samuel Lucas</Copyright>
     <Authors>Samuel Lucas</Authors>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
