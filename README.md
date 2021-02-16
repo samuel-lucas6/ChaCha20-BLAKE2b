@@ -114,9 +114,9 @@ byte[] macKey = GenericHash.HashSaltPersonal(nonce, inputKeyingMaterial, salt, C
 ```c#
 byte[] ciphertext = StreamEncryption.EncryptChaCha20(message, nonce, encryptionKey);
 ```
-6. The additional data, ciphertext, additional data length, and ciphertext length are concatenated.
+6. The additional data, ciphertext, additional data length, and ciphertext length are concatenated. The array lengths are always little-endian.
 ```c#
-byte[] tagMessage = Arrays.Concat(additionalData, ciphertext, BitConverter.GetBytes(additionalData.Length), BitConverter.GetBytes(ciphertext.Length));
+byte[] tagMessage = Arrays.Concat(additionalData, ciphertext, Arrays.ConvertLength(additionalData.Length), Arrays.ConvertLength(ciphertext.Length));
 ```
 7. BLAKE2b is used to hash this message with the MAC key as the key. The tag length defaults to 32 bytes but can also be 16 or 64 bytes.
 ```c#
@@ -149,9 +149,9 @@ byte[] macKey = GenericHash.HashSaltPersonal(nonce, inputKeyingMaterial, salt, C
 byte[] tag = Tag.Read(ciphertext, tagSize);
 ciphertext = Tag.Remove(ciphertext, tagSize);
 ```
-6. The additional data, ciphertext, additional data length, and ciphertext length are concatenated.
+6. The additional data, ciphertext, additional data length, and ciphertext length are concatenated. The array lengths are always little-endian.
 ```c#
-byte[] tagMessage = Arrays.Concat(additionalData, ciphertext, BitConverter.GetBytes(additionalData.Length), BitConverter.GetBytes(ciphertext.Length));
+byte[] tagMessage = Arrays.Concat(additionalData, ciphertext, Arrays.ConvertLength(additionalData.Length), Arrays.ConvertLength(ciphertext.Length));
 ```
 7. BLAKE2b is used to hash this message with the MAC key as the key. The tag length defaults to 32 bytes but can also be 16 or 64 bytes.
 ```c#

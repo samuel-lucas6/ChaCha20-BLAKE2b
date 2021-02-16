@@ -46,5 +46,16 @@ namespace ChaCha20BLAKE2
             Array.Copy(d, _index, concat, a.Length + b.Length + c.Length, d.Length);
             return concat;
         }
+
+        internal static byte[] ConvertLength(int length)
+        {
+            byte[] arrayLength = BitConverter.GetBytes(length);
+            // Always use little endian
+            if (!BitConverter.IsLittleEndian)
+            {
+                Array.Reverse(arrayLength);
+            }
+            return arrayLength;
+        }
     }
 }

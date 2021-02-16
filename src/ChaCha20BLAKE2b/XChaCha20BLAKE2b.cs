@@ -1,5 +1,4 @@
-﻿using System;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using Sodium;
 
 /*
@@ -45,7 +44,7 @@ namespace ChaCha20BLAKE2
             additionalData = ParameterValidation.AdditionalData(additionalData);
             (byte[] encryptionKey, byte[] macKey) = KeyDerivation.DeriveKeys(nonce, key);
             byte[] ciphertext = StreamEncryption.EncryptXChaCha20(message, nonce, encryptionKey);
-            byte[] tagMessage = Arrays.Concat(additionalData, ciphertext, BitConverter.GetBytes(additionalData.Length), BitConverter.GetBytes(ciphertext.Length));
+            byte[] tagMessage = Arrays.Concat(additionalData, ciphertext, Arrays.ConvertLength(additionalData.Length), Arrays.ConvertLength(ciphertext.Length));
             byte[] tag = GenericHash.Hash(tagMessage, macKey, (int)tagLength);
             return Arrays.Concat(ciphertext, tag);
         }
@@ -67,7 +66,7 @@ namespace ChaCha20BLAKE2
             (byte[] encryptionKey, byte[] macKey) = KeyDerivation.DeriveKeys(nonce, key);
             byte[] tag = Tag.Read(ciphertext, tagSize);
             ciphertext = Tag.Remove(ciphertext, tagSize);
-            byte[] tagMessage = Arrays.Concat(additionalData, ciphertext, BitConverter.GetBytes(additionalData.Length), BitConverter.GetBytes(ciphertext.Length));
+            byte[] tagMessage = Arrays.Concat(additionalData, ciphertext, Arrays.ConvertLength(additionalData.Length), Arrays.ConvertLength(ciphertext.Length));
             byte[] computedTag = GenericHash.Hash(tagMessage, macKey, tagSize);
             bool validTag = Utilities.Compare(tag, computedTag);
             return !validTag ? throw new CryptographicException() : StreamEncryption.DecryptXChaCha20(ciphertext, nonce, encryptionKey);
