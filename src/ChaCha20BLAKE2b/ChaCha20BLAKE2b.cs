@@ -34,9 +34,10 @@ namespace ChaCha20BLAKE2
         /// <param name="nonce">The 8 byte nonce.</param>
         /// <param name="key">The 32 byte key.</param>
         /// <param name="additionalData">Optional additional data to authenticate.</param>
+        /// <param name="tagLength">The length of the authentication tag. The default length is 32 bytes.</param>
         /// <remarks>Never reuse a nonce with the same key. A counter nonce is strongly recommended.</remarks>
         /// <returns>The ciphertext and tag.</returns>
-        public static byte[] Encrypt(byte[] message, byte[] nonce, byte[] key, byte[] additionalData = null)
+        public static byte[] Encrypt(byte[] message, byte[] nonce, byte[] key, byte[] additionalData = null, TagLength tagLength = TagLength.Medium)
         {
             ParameterValidation.Message(message);
             ParameterValidation.Nonce(nonce, Constants.ChaChaNonceLength);
@@ -45,7 +46,7 @@ namespace ChaCha20BLAKE2
             (byte[] encryptionKey, byte[] macKey) = KeyDerivation.DeriveKeys(nonce, key);
             byte[] ciphertext = StreamEncryption.EncryptChaCha20(message, nonce, encryptionKey);
             byte[] tagMessage = Arrays.Concat(additionalData, ciphertext, BitConverter.GetBytes(additionalData.Length), BitConverter.GetBytes(ciphertext.Length));
-            byte[] tag = GenericHash.Hash(tagMessage, macKey, Constants.TagLength);
+            byte[] tag = GenericHash.Hash(tagMessage, macKey, (int)tagLength);
             return Arrays.Concat(ciphertext, tag);
         }
 
@@ -54,19 +55,20 @@ namespace ChaCha20BLAKE2
         /// <param name="nonce">The 8 byte nonce.</param>
         /// <param name="key">The 32 byte key.</param>
         /// <param name="additionalData">Optional additional data to authenticate.</param>
-        /// <remarks>Never reuse a nonce with the same key. A counter nonce is strongly recommended.</remarks>
+        /// <param name="tagLength">The length of the authentication tag. The default length is 32 bytes.</param>
         /// <returns>The decrypted message.</returns>
-        public static byte[] Decrypt(byte[] ciphertext, byte[] nonce, byte[] key, byte[] additionalData = null)
+        public static byte[] Decrypt(byte[] ciphertext, byte[] nonce, byte[] key, byte[] additionalData = null, TagLength tagLength = TagLength.Medium)
         {
             ParameterValidation.Message(ciphertext);
             ParameterValidation.Nonce(nonce, Constants.ChaChaNonceLength);
             ParameterValidation.Key(key, Constants.EncryptionKeyLength);
             additionalData = ParameterValidation.AdditionalData(additionalData);
+            int tagSize = (int)tagLength;
             (byte[] encryptionKey, byte[] macKey) = KeyDerivation.DeriveKeys(nonce, key);
-            byte[] tag = Tag.Read(ciphertext);
-            ciphertext = Tag.Remove(ciphertext);
+            byte[] tag = Tag.Read(ciphertext, tagSize);
+            ciphertext = Tag.Remove(ciphertext, tagSize);
             byte[] tagMessage = Arrays.Concat(additionalData, ciphertext, BitConverter.GetBytes(additionalData.Length), BitConverter.GetBytes(ciphertext.Length));
-            byte[] computedTag = GenericHash.Hash(tagMessage, macKey, Constants.TagLength);
+            byte[] computedTag = GenericHash.Hash(tagMessage, macKey, tagSize);
             bool validTag = Utilities.Compare(tag, computedTag);
             return !validTag ? throw new CryptographicException() : StreamEncryption.DecryptChaCha20(ciphertext, nonce, encryptionKey);
         }

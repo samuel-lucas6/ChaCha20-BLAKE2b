@@ -27,16 +27,16 @@ namespace ChaCha20BLAKE2
 {
     internal static class Tag
     {
-        internal static byte[] Read(byte[] ciphertext)
+        internal static byte[] Read(byte[] ciphertext, int tagLength)
         {
-            byte[] tag = new byte[Constants.TagLength];
+            byte[] tag = new byte[tagLength];
             Array.Copy(ciphertext, ciphertext.Length - tag.Length, tag, destinationIndex: 0, tag.Length);
             return tag;
         }
 
-        internal static byte[] Remove(byte[] ciphertextWithTag)
+        internal static byte[] Remove(byte[] ciphertextWithTag, int tagLength)
         {
-            byte[] ciphertext = new byte[ciphertextWithTag.Length - Constants.TagLength];
+            byte[] ciphertext = new byte[ciphertextWithTag.Length - tagLength];
             Array.Copy(ciphertextWithTag, sourceIndex: 0, ciphertext, destinationIndex: 0, ciphertext.Length);
             return ciphertext;
         }

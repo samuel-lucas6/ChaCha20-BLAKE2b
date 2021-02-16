@@ -32,7 +32,6 @@ namespace ChaCha20BLAKE2
         internal const int MacKeyLength = 64;
         internal const int ChaChaNonceLength = 8;
         internal const int XChaChaNonceLength = 24;
-        internal const int TagLength = 64;
         internal static readonly byte[] EncryptionPersonal = Encoding.UTF8.GetBytes("ChaCha20.Encrypt");
         internal static readonly byte[] AuthenticationPersonal = Encoding.UTF8.GetBytes("BLAKE2b.KeyedMAC");
     }
