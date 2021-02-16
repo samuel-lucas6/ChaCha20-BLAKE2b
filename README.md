@@ -18,7 +18,7 @@ However, as a demo, this library offers an Encrypt-then-MAC implementation that 
 
 ## How does ChaCha20-BLAKE2b solve these problems?
 1. This implementation is key committing because it uses keyed BLAKE2b and both the encryption key and MAC key are derived from the same master key.
-2. This implementation uses a 512-bit tag, which is the maximum output length for BLAKE2b. This offers improved security over a 128-bit tag.
+2. This implementation defaults to a 256-bit tag but also supports 128-bit and 512-bit tags. Using a longer tag offers improved security.
 
 ## How do I use this?
 1. Install the [Sodium.Core](https://www.nuget.org/packages/Sodium.Core) NuGet package in [Visual Studio](https://docs.microsoft.com/en-us/nuget/quickstart/install-and-use-a-package-in-visual-studio).
@@ -47,11 +47,11 @@ byte[] key = SodiumCore.GetRandomBytes(keyLength);
 // The additional data can be null or version numbers, timestamps, etc
 byte[] additionalData = BitConverter.GetBytes(version);
 
-// Encrypt the message
-byte[] ciphertext = ChaCha20BLAKE2b.Encrypt(message, nonce, key, additionalData);
+// Encrypt the message and use a 256-bit authentication tag
+byte[] ciphertext = ChaCha20BLAKE2b.Encrypt(message, nonce, key, additionalData, TagLength.Medium);
 
 // Decrypt the ciphertext
-byte[] plaintext = ChaCha20BLAKE2b.Decrypt(ciphertext, nonce, key, additionalData);
+byte[] plaintext = ChaCha20BLAKE2b.Decrypt(ciphertext, nonce, key, additionalData, TagLength.Medium);
 ```
 
 ### XChaCha20
@@ -74,11 +74,11 @@ byte[] key = SodiumCore.GetRandomBytes(keyLength);
 // The additional data can be null or version numbers, timestamps, etc
 byte[] additionalData = BitConverter.GetBytes(version);
 
-// Encrypt the message
-byte[] ciphertext = XChaCha20BLAKE2b.Encrypt(message, nonce, key, additionalData);
+// Encrypt the message and use a 512-bit authentication tag
+byte[] ciphertext = XChaCha20BLAKE2b.Encrypt(message, nonce, key, additionalData, TagLength.Long);
 
 // Decrypt the ciphertext
-byte[] plaintext = XChaCha20BLAKE2b.Decrypt(ciphertext, nonce, key, additionalData);
+byte[] plaintext = XChaCha20BLAKE2b.Decrypt(ciphertext, nonce, key, additionalData, TagLength.Long);
 ```
 
 ## How does it work?
@@ -89,7 +89,6 @@ internal const int EncryptionKeyLength = 32;
 internal const int MacKeyLength = 64;
 internal const int ChaChaNonceLength = 8;
 internal const int XChaChaNonceLength = 24;
-internal const int TagLength = 64;
 internal static readonly byte[] EncryptionPersonal = Encoding.UTF8.GetBytes("ChaCha20.Encrypt");
 internal static readonly byte[] AuthenticationPersonal = Encoding.UTF8.GetBytes("BLAKE2b.KeyedMAC");
 ```
@@ -99,7 +98,7 @@ internal static readonly byte[] AuthenticationPersonal = Encoding.UTF8.GetBytes(
 ```c#
 byte[] salt = new byte[Constants.SaltLength];
 ```
-2. BLAKE2b-256 is used, with the nonce as the message, the key as the key, the counter as the salt, and ```Constants.EncryptionPersonal``` as the personalisation parameter, to derive a 32 byte encryption key.
+2. BLAKE2b-256 is used to derive a 32 byte encryption key. The nonce is used as the message, the key as the key, the counter as the salt, and ```Constants.EncryptionPersonal``` as the personalisation parameter.
 ```c#
 byte[] encryptionKey = GenericHash.HashSaltPersonal(nonce, inputKeyingMaterial, salt, Constants.EncryptionPersonal, Constants.EncryptionKeyLength);
 ```
@@ -107,7 +106,7 @@ byte[] encryptionKey = GenericHash.HashSaltPersonal(nonce, inputKeyingMaterial, 
 ```c#
 salt = Utilities.Increment(salt);
 ```
-4. BLAKE2b-512 is used, with the nonce as the message, the key as the key, the counter as the salt, and ```Constants.AuthenticationPersonal``` as the personalisation parameter, to derive a 64 byte MAC key.
+4. BLAKE2b-512 is used to derive a 64 byte MAC key. The nonce is used as the message, the key as the key, the counter as the salt, and ```Constants.AuthenticationPersonal``` as the personalisation parameter.
 ```c#
 byte[] macKey = GenericHash.HashSaltPersonal(nonce, inputKeyingMaterial, salt, Constants.AuthenticationPersonal, Constants.MacKeyLength);
 ```
@@ -119,9 +118,9 @@ byte[] ciphertext = StreamEncryption.EncryptChaCha20(message, nonce, encryptionK
 ```c#
 byte[] tagMessage = Arrays.Concat(additionalData, ciphertext, BitConverter.GetBytes(additionalData.Length), BitConverter.GetBytes(ciphertext.Length));
 ```
-7. BLAKE2b-512 is used to hash this message with the MAC key as the key.
+7. BLAKE2b is used to hash this message with the MAC key as the key. The tag length defaults to 32 bytes but can also be 16 or 64 bytes.
 ```c#
-byte[] tag = GenericHash.Hash(tagMessage, macKey, Constants.TagLength);
+byte[] tag = GenericHash.Hash(tagMessage, macKey, (int)tagLength);
 ```
 8. The authentication tag is appended to the ciphertext.
 ```c#
@@ -133,7 +132,7 @@ return Arrays.Concat(ciphertext, tag);
 ```c#
 byte[] salt = new byte[Constants.SaltLength];
 ```
-2. BLAKE2b-256 is used, with the nonce as the message, the key as the key, the counter as the salt, and ```Constants.EncryptionPersonal``` as the personalisation parameter, to derive the 32 byte encryption key.
+2. BLAKE2b-256 is used to derive a 32 byte encryption key. The nonce is used as the message, the key as the key, the counter as the salt, and ```Constants.EncryptionPersonal``` as the personalisation parameter.
 ```c#
 byte[] encryptionKey = GenericHash.HashSaltPersonal(nonce, inputKeyingMaterial, salt, Constants.EncryptionPersonal, Constants.EncryptionKeyLength);
 ```
@@ -141,22 +140,22 @@ byte[] encryptionKey = GenericHash.HashSaltPersonal(nonce, inputKeyingMaterial, 
 ```c#
 salt = Utilities.Increment(salt);
 ```
-4. BLAKE2b-512 is used, with the nonce as the message, the key as the key, the counter as the salt, and ```Constants.AuthenticationPersonal``` as the personalisation parameter, to derive the 64 byte MAC key.
+4. BLAKE2b-512 is used to derive a 64 byte MAC key. The nonce is used as the message, the key as the key, the counter as the salt, and ```Constants.AuthenticationPersonal``` as the personalisation parameter.
 ```c#
 byte[] macKey = GenericHash.HashSaltPersonal(nonce, inputKeyingMaterial, salt, Constants.AuthenticationPersonal, Constants.MacKeyLength);
 ```
 5. The authentication tag is read and removed from the ciphertext.
 ```c#
-byte[] tag = Tag.Read(ciphertext);
-ciphertext = Tag.Remove(ciphertext);
+byte[] tag = Tag.Read(ciphertext, tagSize);
+ciphertext = Tag.Remove(ciphertext, tagSize);
 ```
 6. The additional data, ciphertext, additional data length, and ciphertext length are concatenated.
 ```c#
 byte[] tagMessage = Arrays.Concat(additionalData, ciphertext, BitConverter.GetBytes(additionalData.Length), BitConverter.GetBytes(ciphertext.Length));
 ```
-7. BLAKE2b-512 is used to hash this message with the MAC key as the key.
+7. BLAKE2b is used to hash this message with the MAC key as the key. The tag length defaults to 32 bytes but can also be 16 or 64 bytes.
 ```c#
-byte[] computedTag = GenericHash.Hash(tagMessage, macKey, Constants.TagLength);
+byte[] computedTag = GenericHash.Hash(tagMessage, macKey, tagSize);
 ```
 8. The computed tag is compared in constant time to the tag read from the ciphertext. If they do not match, then a ```CryptographicException``` is thrown and decryption stops.
 ```c#
