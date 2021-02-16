@@ -10,7 +10,11 @@
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <RootNamespace>ChaCha20BLAKE2</RootNamespace>
     <AssemblyName>ChaCha20BLAKE2b</AssemblyName>
-    <Version>1.0.2</Version>
+    <Version>1.1.0</Version>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageProjectUrl>https://github.com/samuel-lucas6/ChaCha20-BLAKE2b</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/samuel-lucas6/ChaCha20-BLAKE2b</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
