@@ -84,6 +84,19 @@ byte[] ciphertext = XChaCha20BLAKE2b.Encrypt(message, nonce, key, additionalData
 byte[] plaintext = XChaCha20BLAKE2b.Decrypt(ciphertext, nonce, key, additionalData, TagLength.Long);
 ```
 
+## How fast is it?
+ChaCha20-BLAKE2b is slower than regular ChaCha20-Poly1305, but when you implement the [padding fix](https://eprint.iacr.org/2020/1491.pdf) to add key commitment, the decryption time is roughly the same. Furthermore, if you take into account the longer tag length, then it is a worthwhile tradeoff.
+
+The following benchmarks were done using [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet/) with a 34.1 MiB JPG file as the message:
+|                   Function |     Mean |    Error |   StdDev |
+|------------------------- |----------|----------|----------|
+| ChaCha20-BLAKE2b.Encrypt | 69.39 ms | 0.349 ms | 0.326 ms |
+| ChaCha20-BLAKE2b.Decrypt | 69.66 ms | 0.390 ms | 0.346 ms |
+| ChaCha20-Poly1305.Encrypt | 55.21 ms | 0.783 ms | 0.732 ms |
+| ChaCha20-Poly1305.Decrypt | 54.03 ms | 0.093 ms | 0.073 ms |
+| ChaCha20-Poly1305.Encrypt (with padding fix) | 54.95 ms | 0.569 ms | 0.533 ms |
+| ChaCha20-Poly1305.Decrypt (with padding fix) | 68.78 ms | 0.523 ms | 0.463 ms |
+
 ## How does it work?
 ### Constants
 ```c#
