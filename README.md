@@ -4,11 +4,14 @@
 An AEAD implementation using [libsodium](https://doc.libsodium.org/). This library supports both [ChaCha20](https://doc.libsodium.org/advanced/stream_ciphers/chacha20) and [XChaCha20](https://doc.libsodium.org/advanced/stream_ciphers/xchacha20).
 
 ## Should I use this?
-⚠️**You should NOT use this for anything in production yet. This is currently a demo implementation.**
+*It depends*. This implementation has not been standardised like [ChaCha20-Poly1305](https://tools.ietf.org/html/rfc7539). If that is important to you, then obviously avoid using this.
 
-However, as a demo, this library offers an Encrypt-then-MAC implementation that does several things for you:
+However, ChaCha20-BLAKE2b is essentially Encrypt-then-MAC with keyed BLAKE2b rather than HMAC. To put things in perspective, the [Signal protocol](https://www.signal.org/docs/specifications/doubleratchet/#recommended-cryptographic-algorithms) uses Encrypt-then-MAC with AES-CBC and HMAC.
 
-- Derives a unique encryption key and MAC key based on the (master) key and nonce.
+## Why should I use this?
+This library does several things for you:
+
+- Derives a unique 256-bit encryption key and 512-bit MAC key based on the (master) key and nonce.
 - Appends the authentication tag to the ciphertext.
 - Compares the authentication tags in constant time during decryption and only returns plaintext if they match.
 
