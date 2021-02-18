@@ -35,6 +35,14 @@ namespace ChaCha20BLAKE2
             }
         }
 
+        internal static void Ciphertext(byte[] ciphertext)
+        {
+            if (ciphertext == null)
+            {
+                throw new ArgumentNullException(nameof(ciphertext), "Ciphertext cannot be null.");
+            }
+        }
+
         internal static void Nonce(byte[] nonce, int validNonceLength)
         {
             if (nonce == null || nonce.Length != validNonceLength)

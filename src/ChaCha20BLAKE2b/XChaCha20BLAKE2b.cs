@@ -58,7 +58,7 @@ namespace ChaCha20BLAKE2
         /// <returns>The decrypted message.</returns>
         public static byte[] Decrypt(byte[] ciphertext, byte[] nonce, byte[] key, byte[] additionalData = null, TagLength tagLength = TagLength.Medium)
         {
-            ParameterValidation.Message(ciphertext);
+            ParameterValidation.Ciphertext(ciphertext);
             ParameterValidation.Nonce(nonce, Constants.XChaChaNonceLength);
             ParameterValidation.Key(key, Constants.EncryptionKeyLength);
             additionalData = ParameterValidation.AdditionalData(additionalData);
