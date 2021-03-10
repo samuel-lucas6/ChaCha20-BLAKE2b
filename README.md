@@ -17,7 +17,7 @@ This library does several things for you:
 
 ## What is wrong with ChaCha20-Poly1305?
 1. ChaCha20-Poly1305 is not key committing, meaning it is possible to decrypt a ciphertext using [multiple keys](https://eprint.iacr.org/2020/1491.pdf). The recommended approach for avoiding this problem (zero padding) has to be manually implemented, is potentially vulnerable to timing attacks, and will slow down decryption.
-2. Poly1305 produces a 128-bit tag, which is rather short. The recommended hash length is typically a minimum of 256-bit, with 512-bit being preferable when possible because longer hashes have improved security guarantees.
+2. Poly1305 produces a 128-bit tag, which is rather short. The recommended hash length is typically 256-bit because it offers 128-bit security.
 
 ## How does ChaCha20-BLAKE2b solve these problems?
 1. This implementation is key committing because it uses keyed BLAKE2b and both the encryption key and MAC key are derived from the same master key.
