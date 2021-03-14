@@ -17,7 +17,7 @@ This library does several things for you:
 
 ## What is wrong with ChaCha20-Poly1305?
 1. ChaCha20-Poly1305 is not key committing, meaning it is possible to decrypt a ciphertext using [multiple keys](https://eprint.iacr.org/2020/1491.pdf). The recommended approach for avoiding this problem (zero padding) has to be manually implemented, is potentially vulnerable to timing attacks, and will slow down decryption.
-2. Poly1305 produces a 128-bit tag, which is rather short. The recommended hash length is typically 256-bit because it offers 128-bit security.
+2. Poly1305 produces a 128-bit tag, which is rather short. The recommended hash length is typically 256-bit because that offers 128-bit security.
 
 ## How does ChaCha20-BLAKE2b solve these problems?
 1. This implementation is key committing because it uses keyed BLAKE2b and both the encryption key and MAC key are derived from the same master key.
@@ -90,8 +90,8 @@ ChaCha20-BLAKE2b is slower than regular ChaCha20-Poly1305, but when you implemen
 The following benchmarks were done using [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet/) in a .NET Core 3.1 console application with a 34.1 MiB JPG file as the message, 16 bytes of additional data, and a 256-bit tag length:
 |                   Function |     Mean |    Error |   StdDev |
 |------------------------- |----------|----------|----------|
-| ChaCha20-BLAKE2b.Encrypt | 70.39 ms | 1.373 ms | 1.410 ms |
-| ChaCha20-BLAKE2b.Decrypt | 71.10 ms | 1.102 ms | 1.031 ms |
+| **ChaCha20-BLAKE2b.Encrypt** | **70.39 ms** | **1.373 ms** | **1.410 ms** |
+| **ChaCha20-BLAKE2b.Decrypt** | **71.10 ms** | **1.102 ms** | **1.031 ms** |
 | ChaCha20-Poly1305.Encrypt | 54.24 ms | 0.143 ms | 0.127 ms |
 | ChaCha20-Poly1305.Decrypt | 54.76 ms | 0.416 ms | 0.389 ms |
 | ChaCha20-Poly1305.Encrypt (with padding fix) | 66.68 ms | 1.090 ms | 1.020 ms |
