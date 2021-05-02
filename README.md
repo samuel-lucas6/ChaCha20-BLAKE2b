@@ -98,8 +98,8 @@ The following benchmarks were done using [BenchmarkDotNet](https://github.com/do
 | **ChaCha20-BLAKE2b.Decrypt** | **72.34 ms** | **0.852 ms** | **0.797 ms** |
 | ChaCha20-Poly1305.Encrypt | 55.94 ms | 0.822 ms | 0.769 ms |
 | ChaCha20-Poly1305.Decrypt | 56.31 ms | 0.926 ms | 0.866 ms |
-| 'ChaCha20-Poly1305.Encrypt (with padding fix)' | 69.36 ms | 0.868 ms | 0.770 ms |
-| 'ChaCha20-Poly1305.Decrypt (with padding fix)' | 69.77 ms | 0.879 ms | 0.822 ms |
+| ChaCha20-Poly1305.Encrypt (with padding fix) | 69.36 ms | 0.868 ms | 0.770 ms |
+| ChaCha20-Poly1305.Decrypt (with padding fix) | 69.77 ms | 0.879 ms | 0.822 ms |
 
 16.1 KiB Kryptor file:
 |                 Function |     Mean |    Error |   StdDev |
@@ -108,8 +108,8 @@ The following benchmarks were done using [BenchmarkDotNet](https://github.com/do
 | **ChaCha20-BLAKE2b.Decrypt** | **18.38 us** | **0.152 us** | **0.143 us** |
 | ChaCha20-Poly1305.Encrypt | 17.52 us | 0.100 us | 0.093 us |
 | ChaCha20-Poly1305.Decrypt | 17.73 us | 0.166 us | 0.155 us |
-| 'ChaCha20-Poly1305.Encrypt (with padding fix)' | 18.23 us | 0.052 us | 0.043 us |
-| 'ChaCha20-Poly1305.Decrypt (with padding fix)' | 18.45 us | 0.034 us | 0.032 us |
+| ChaCha20-Poly1305.Encrypt (with padding fix) | 18.23 us | 0.052 us | 0.043 us |
+| ChaCha20-Poly1305.Decrypt (with padding fix) | 18.45 us | 0.034 us | 0.032 us |
 
 128 byte text file:
 |                 Function |     Mean |    Error |   StdDev |
@@ -118,8 +118,8 @@ The following benchmarks were done using [BenchmarkDotNet](https://github.com/do
 | **ChaCha20-BLAKE2b.Decrypt** | **1.223 us** | **0.0091 us** | **0.0085 us** |
 | ChaCha20-Poly1305.Encrypt | 521.5 ns | 1.79 ns | 1.50 ns |
 | ChaCha20-Poly1305.Decrypt | 540.7 ns | 0.99 ns | 0.88 ns |
-| 'ChaCha20-Poly1305.Encrypt (with padding fix)' | 643.7 ns | 0.40 ns | 0.34 ns |
-| 'ChaCha20-Poly1305.Decrypt (with padding fix)' | 706.4 ns | 0.84 ns | 0.79 ns |
+| ChaCha20-Poly1305.Encrypt (with padding fix) | 643.7 ns | 0.40 ns | 0.34 ns |
+| ChaCha20-Poly1305.Decrypt (with padding fix) | 706.4 ns | 0.84 ns | 0.79 ns |
 
 ## How does it work?
 ### Constants
