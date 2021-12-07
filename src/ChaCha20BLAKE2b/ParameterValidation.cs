@@ -1,7 +1,7 @@
 ﻿using System;
 
 /*
-    ChaCha20-BLAKE2b: A committing AEAD implementation.
+    ChaCha20-BLAKE2b: Committing ChaCha20-BLAKE2b, XChaCha20-BLAKE2b, and XChaCha20-BLAKE2b-SIV AEAD implementations.
     Copyright (c) 2021 Samuel Lucas
 
     Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -31,15 +31,19 @@ namespace ChaCha20BLAKE2
         {
             if (message == null)
             {
-                throw new ArgumentNullException(nameof(message), "Message cannot be null.");
+                throw new ArgumentNullException(nameof(message), "The message cannot be null.");
             }
         }
 
-        internal static void Ciphertext(byte[] ciphertext)
+        internal static void Ciphertext(byte[] ciphertext, int tagLength)
         {
             if (ciphertext == null)
             {
-                throw new ArgumentNullException(nameof(ciphertext), "Ciphertext cannot be null.");
+                throw new ArgumentNullException(nameof(ciphertext), "The ciphertext cannot be null.");
+            }
+            else if (ciphertext.Length <= tagLength)
+            {
+                throw new ArgumentOutOfRangeException(nameof(ciphertext), $"The ciphertext must be at least {tagLength + 1} bytes in length.");
             }
         }
 
@@ -47,7 +51,7 @@ namespace ChaCha20BLAKE2
         {
             if (nonce == null || nonce.Length != validNonceLength)
             {
-                throw new ArgumentOutOfRangeException(nameof(nonce), (nonce == null) ? 0 : nonce.Length, $"Nonce must be {validNonceLength} bytes in length.");
+                throw new ArgumentOutOfRangeException(nameof(nonce), (nonce == null) ? 0 : nonce.Length, $"The nonce must be {validNonceLength} bytes in length.");
             }
         }
 
@@ -55,13 +59,12 @@ namespace ChaCha20BLAKE2
         {
             if (key == null || key.Length != validKeyLength)
             {
-                throw new ArgumentOutOfRangeException(nameof(key), (key == null) ? 0 : key.Length, $"Key must be {validKeyLength} bytes in length.");
+                throw new ArgumentOutOfRangeException(nameof(key), (key == null) ? 0 : key.Length, $"The key must be {validKeyLength} bytes in length.");
             }
         }
 
         internal static byte[] AdditionalData(byte[] additionalData)
         {
-            // Additional data can be null
             return additionalData ?? (Array.Empty<byte>());
         }
     }

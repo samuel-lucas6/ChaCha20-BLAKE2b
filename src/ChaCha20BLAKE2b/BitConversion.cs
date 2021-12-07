@@ -1,4 +1,6 @@
-﻿/*
+﻿using System;
+
+/*
     ChaCha20-BLAKE2b: Committing ChaCha20-BLAKE2b, XChaCha20-BLAKE2b, and XChaCha20-BLAKE2b-SIV AEAD implementations.
     Copyright (c) 2021 Samuel Lucas
 
@@ -23,10 +25,13 @@
 
 namespace ChaCha20BLAKE2
 {
-    public enum TagLength
+    internal static class BitConversion
     {
-        BLAKE2b256 = 32,
-        BLAKE2b384 = 48,
-        BLAKE2b512 = 64
+        internal static byte[] GetBytes(int value)
+        {
+            var valueBytes = BitConverter.GetBytes(value);
+            if (!BitConverter.IsLittleEndian) { Array.Reverse(valueBytes); }
+            return valueBytes;
+        }
     }
 }

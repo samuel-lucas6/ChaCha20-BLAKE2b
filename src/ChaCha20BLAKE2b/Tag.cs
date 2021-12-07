@@ -1,7 +1,8 @@
 ﻿using System;
+using Sodium;
 
 /*
-    ChaCha20-BLAKE2b: A committing AEAD implementation.
+    ChaCha20-BLAKE2b: Committing ChaCha20-BLAKE2b, XChaCha20-BLAKE2b, and XChaCha20-BLAKE2b-SIV AEAD implementations.
     Copyright (c) 2021 Samuel Lucas
 
     Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -27,18 +28,31 @@ namespace ChaCha20BLAKE2
 {
     internal static class Tag
     {
+        internal static byte[] Calculate(byte[] ciphertext, byte[] additionalData, byte[] macKey, int tagLength)
+        {
+            byte[] tagMessage = Arrays.Concat(additionalData, ciphertext, BitConversion.GetBytes(additionalData.Length), BitConversion.GetBytes(ciphertext.Length));
+            return GenericHash.Hash(tagMessage, macKey, tagLength);
+        }
+
         internal static byte[] Read(byte[] ciphertext, int tagLength)
         {
-            byte[] tag = new byte[tagLength];
+            var tag = new byte[tagLength];
             Array.Copy(ciphertext, ciphertext.Length - tag.Length, tag, destinationIndex: 0, tag.Length);
             return tag;
         }
 
         internal static byte[] Remove(byte[] ciphertextWithTag, int tagLength)
         {
-            byte[] ciphertext = new byte[ciphertextWithTag.Length - tagLength];
+            var ciphertext = new byte[ciphertextWithTag.Length - tagLength];
             Array.Copy(ciphertextWithTag, sourceIndex: 0, ciphertext, destinationIndex: 0, ciphertext.Length);
             return ciphertext;
+        }
+
+        internal static byte[] GetNonce(byte[] tag)
+        {
+            var nonce = new byte[Constants.XChaCha20NonceSize];
+            Array.Copy(tag, nonce, nonce.Length);
+            return nonce;
         }
     }
 }

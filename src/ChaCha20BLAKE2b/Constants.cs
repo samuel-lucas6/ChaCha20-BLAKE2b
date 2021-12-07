@@ -1,7 +1,5 @@
-﻿using System.Text;
-
-/*
-    ChaCha20-BLAKE2b: A committing AEAD implementation.
+﻿/*
+    ChaCha20-BLAKE2b: Committing ChaCha20-BLAKE2b, XChaCha20-BLAKE2b, and XChaCha20-BLAKE2b-SIV AEAD implementations.
     Copyright (c) 2021 Samuel Lucas
 
     Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -27,12 +25,9 @@ namespace ChaCha20BLAKE2
 {
     internal static class Constants
     {
-        internal const int SaltLength = 16;
-        internal const int EncryptionKeyLength = 32;
-        internal const int MacKeyLength = 64;
-        internal const int ChaChaNonceLength = 8;
-        internal const int XChaChaNonceLength = 24;
-        internal static readonly byte[] EncryptionPersonal = Encoding.UTF8.GetBytes("ChaCha20.Encrypt");
-        internal static readonly byte[] AuthenticationPersonal = Encoding.UTF8.GetBytes("BLAKE2b.KeyedMAC");
+        internal const int EncryptionKeySize = 32;
+        internal const int MacKeySize = 64;
+        internal const int ChaCha20NonceSize = 8;
+        internal const int XChaCha20NonceSize = 24;
     }
 }

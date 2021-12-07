@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 /*
-    ChaCha20-BLAKE2b: A committing AEAD implementation.
+    ChaCha20-BLAKE2b: Committing ChaCha20-BLAKE2b, XChaCha20-BLAKE2b, and XChaCha20-BLAKE2b-SIV AEAD implementations.
     Copyright (c) 2021 Samuel Lucas
 
     Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -27,35 +28,33 @@ namespace ChaCha20BLAKE2
 {
     internal static class Arrays
     {
-        private const int _index = 0;
+        private const int _zeroIndex = 0;
 
         internal static byte[] Concat(byte[] a, byte[] b)
         {
             var concat = new byte[a.Length + b.Length];
-            Array.Copy(a, _index, concat, _index, a.Length);
-            Array.Copy(b, _index, concat, a.Length, b.Length);
+            Array.Copy(a, _zeroIndex, concat, _zeroIndex, a.Length);
+            Array.Copy(b, _zeroIndex, concat, a.Length, b.Length);
             return concat;
         }
 
         internal static byte[] Concat(byte[] a, byte[] b, byte[] c, byte[] d)
         {
             var concat = new byte[a.Length + b.Length + c.Length + d.Length];
-            Array.Copy(a, _index, concat, _index, a.Length);
-            Array.Copy(b, _index, concat, a.Length, b.Length);
-            Array.Copy(c, _index, concat, a.Length + b.Length, c.Length);
-            Array.Copy(d, _index, concat, a.Length + b.Length + c.Length, d.Length);
+            Array.Copy(a, _zeroIndex, concat, _zeroIndex, a.Length);
+            Array.Copy(b, _zeroIndex, concat, a.Length, b.Length);
+            Array.Copy(c, _zeroIndex, concat, a.Length + b.Length, c.Length);
+            Array.Copy(d, _zeroIndex, concat, a.Length + b.Length + c.Length, d.Length);
             return concat;
         }
 
-        internal static byte[] ConvertLength(int length)
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+        internal static void ZeroMemory(byte[] array)
         {
-            byte[] arrayLength = BitConverter.GetBytes(length);
-            // Always use little endian
-            if (!BitConverter.IsLittleEndian)
+            if (array != null & array.Length > 0)
             {
-                Array.Reverse(arrayLength);
+                Array.Clear(array, _zeroIndex, array.Length);
             }
-            return arrayLength;
         }
     }
 }

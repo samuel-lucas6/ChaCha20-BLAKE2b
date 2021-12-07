@@ -1,7 +1,8 @@
-﻿using Sodium;
+﻿using System;
+using Sodium;
 
 /*
-    ChaCha20-BLAKE2b: A committing AEAD implementation.
+    ChaCha20-BLAKE2b: Committing ChaCha20-BLAKE2b, XChaCha20-BLAKE2b, and XChaCha20-BLAKE2b-SIV AEAD implementations.
     Copyright (c) 2021 Samuel Lucas
 
     Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -27,13 +28,18 @@ namespace ChaCha20BLAKE2
 {
     internal static class KeyDerivation
     {
-        internal static (byte[] encryptionKey, byte[] macKey) DeriveKeys(byte[] nonce, byte[] inputKeyingMaterial)
+        internal static (byte[] encryptionKey, byte[] macKey) DeriveKeys(byte[] inputKeyingMaterial, byte[] nonce, byte[] encryptionContext, byte[] authenticationContext)
         {
-            byte[] salt = new byte[Constants.SaltLength];
-            byte[] encryptionKey = GenericHash.HashSaltPersonal(nonce, inputKeyingMaterial, salt, Constants.EncryptionPersonal, Constants.EncryptionKeyLength);
-            salt = Utilities.Increment(salt);
-            byte[] macKey = GenericHash.HashSaltPersonal(nonce, inputKeyingMaterial, salt, Constants.AuthenticationPersonal, Constants.MacKeyLength);
+            byte[] encryptionKey = BLAKE2bKDF(inputKeyingMaterial, encryptionContext, Constants.EncryptionKeySize);
+            byte[] macKey = BLAKE2bKDF(inputKeyingMaterial, authenticationContext, Constants.MacKeySize, nonce);
             return (encryptionKey, macKey);
+        }
+
+        private static byte[] BLAKE2bKDF(byte[] inputKeyingMaterial, byte[] context, int outputLength, byte[] salt = null)
+        {
+            if (salt == null) { salt = Array.Empty<byte>(); }
+            byte[] message = Arrays.Concat(salt, context, BitConversion.GetBytes(salt.Length), BitConversion.GetBytes(context.Length));
+            return GenericHash.Hash(message, inputKeyingMaterial, outputLength);
         }
     }
 }

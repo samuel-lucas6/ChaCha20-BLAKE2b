@@ -3,18 +3,22 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Description>A committing AEAD implementation.</Description>
+    <Description>Committing ChaCha20-BLAKE2b, XChaCha20-BLAKE2b, and XChaCha20-BLAKE2b-SIV AEAD implementations.</Description>
     <Copyright>Copyright (c) 2021 Samuel Lucas</Copyright>
     <Authors>Samuel Lucas</Authors>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <RootNamespace>ChaCha20BLAKE2</RootNamespace>
     <AssemblyName>ChaCha20BLAKE2b</AssemblyName>
-    <Version>1.1.2</Version>
+    <Version>2.0.0</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageProjectUrl>https://github.com/samuel-lucas6/ChaCha20-BLAKE2b</PackageProjectUrl>
     <RepositoryUrl>https://github.com/samuel-lucas6/ChaCha20-BLAKE2b</RepositoryUrl>
+    <ErrorReport>none</ErrorReport>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>cryptography;crypto;chacha20;xchacha20;xchacha20-siv;blake2;blake2b;chacha20-blake2b;xchacha20-blake2b;xchacha20-blake2b-siv</PackageTags>
+    <AnalysisLevel>latest</AnalysisLevel>
   </PropertyGroup>
 
   <ItemGroup>
