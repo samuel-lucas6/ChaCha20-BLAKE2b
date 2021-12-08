@@ -33,6 +33,10 @@ namespace ChaCha20BLAKE2
             {
                 throw new ArgumentNullException(nameof(message), "The message cannot be null.");
             }
+            else if (message.Length == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(message), message.Length, $"The message must be at least 1 byte in length.");
+            }
         }
 
         internal static void Ciphertext(byte[] ciphertext, int tagLength)
@@ -43,23 +47,31 @@ namespace ChaCha20BLAKE2
             }
             else if (ciphertext.Length <= tagLength)
             {
-                throw new ArgumentOutOfRangeException(nameof(ciphertext), $"The ciphertext must be at least {tagLength + 1} bytes in length.");
+                throw new ArgumentOutOfRangeException(nameof(ciphertext), ciphertext.Length, $"The ciphertext must be at least {tagLength + 1} bytes in length.");
             }
         }
 
         internal static void Nonce(byte[] nonce, int validNonceLength)
         {
-            if (nonce == null || nonce.Length != validNonceLength)
+            if (nonce == null)
             {
-                throw new ArgumentOutOfRangeException(nameof(nonce), (nonce == null) ? 0 : nonce.Length, $"The nonce must be {validNonceLength} bytes in length.");
+                throw new ArgumentNullException(nameof(nonce), "The nonce cannot be null.");
+            }
+            else if (nonce.Length != validNonceLength)
+            {
+                throw new ArgumentOutOfRangeException(nameof(nonce), nonce.Length, $"The nonce must be {validNonceLength} bytes in length.");
             }
         }
 
         internal static void Key(byte[] key, int validKeyLength)
         {
-            if (key == null || key.Length != validKeyLength)
+            if (key == null)
             {
-                throw new ArgumentOutOfRangeException(nameof(key), (key == null) ? 0 : key.Length, $"The key must be {validKeyLength} bytes in length.");
+                throw new ArgumentNullException(nameof(key), "The key cannot be null.");
+            }
+            else if (key.Length != validKeyLength)
+            {
+                throw new ArgumentOutOfRangeException(nameof(key), key.Length, $"The key must be {validKeyLength} bytes in length.");
             }
         }
 
