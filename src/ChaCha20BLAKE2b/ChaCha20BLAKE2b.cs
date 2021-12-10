@@ -29,6 +29,8 @@ namespace ChaCha20BLAKE2
 {
     public static class ChaCha20BLAKE2b
     {
+        public const int KeySize = Constants.EncryptionKeySize;
+        public const int NonceSize = Constants.ChaCha20NonceSize;
         private static readonly byte[] _encryptionContext = Encoding.UTF8.GetBytes("ChaCha20-BLAKE2b 07/12/2021 20:40 ChaCha20.Encrypt()");
         private static readonly byte[] _authenticationContext = Encoding.UTF8.GetBytes("ChaCha20-BLAKE2b 07/12/2021 20:41 BLAKE2b.KeyedHash()");
 
