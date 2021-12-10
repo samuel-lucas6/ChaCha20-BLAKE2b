@@ -14,7 +14,7 @@ This library does several things for you:
 - Offers access to an SIV implementation that does not take a nonce.
 
 ## Justification
-The popular AEADs in use today, such as (X)ChaCha20-Poly1305, AES-GCM, AES-GCM-SIV, XSalsa20-Poly1305, AES-OCB, and so on, are not key or message committing. This means it is possible to decrypt a ciphertext using [multiple keys](https://eprint.iacr.org/2020/1491.pdf) without an authentication error, which can lead to [partitioning oracle attacks](https://eprint.iacr.org/2020/1491.pdf) and [deanonymisation](https://github.com/LoupVaillant/Monocypher/issues/218#issuecomment-886997371) in certain online scenarios. Furthermore, if an attacker knows the key, then they can find other messages that have the [same tag](https://neilmadden.blog/2021/02/16/when-a-kem-is-not-enough/).
+The popular AEADs in use today, such as (X)ChaCha20-Poly1305, AES-GCM, AES-GCM-SIV, XSalsa20-Poly1305, AES-OCB, and so on, are not key or message committing. This means it is possible to decrypt a ciphertext using [multiple keys](https://youtu.be/3M1jIO-jLHI) without an authentication error, which can lead to [partitioning oracle attacks](https://eprint.iacr.org/2020/1491.pdf) and [deanonymisation](https://github.com/LoupVaillant/Monocypher/issues/218#issuecomment-886997371) in certain online scenarios. Furthermore, if an attacker knows the key, then they can find other messages that have the [same tag](https://neilmadden.blog/2021/02/16/when-a-kem-is-not-enough/).
 
 This library was created because there are currently no standardised committing AEAD schemes, adding the commitment property to a non-committing AEAD requires using a MAC, and Encrypt-then-MAC offers improved security guarantees, both in terms of the longer authentication tag and commitment properties.
 
@@ -107,4 +107,94 @@ byte[] plaintext = XChaCha20BLAKE2bSIV.Decrypt(ciphertext, key, additionalData);
 ```
 
 ## Benchmarks
-TO DO.
+The following benchmarks were done using [BenchmarkDotNet](https://benchmarkdotnet.org/) in a .NET 6 console application with 16 bytes of additional data.
+
+In sum, (X)ChaCha20-BLAKE2b is almost identical in speed to (X)ChaCha20-Poly1305 for 16-64 KiB messages, which is perfect since these are ideal chunk sizes for performing [chunked encryption](https://www.imperialviolet.org/2014/06/27/streamingencryption.html).
+
+Chunked encryption should be preferred over encrypting large messages in one go because it reduces memory usage, allows earlier detection of corrupted chunks, may help reduce data loss, and reduces wiggle room for attacks in the case of popular AEADs (e.g. ChaCha20-Poly1305 and AES-GCM).
+
+However, (X)ChaCha20-BLAKE2b is slower than (X)ChaCha20-Poly1305 for small and large messages. With that said, you should perform chunked encryption on large messages anyway, rendering this result unimportant, and I would argue that the additional security makes this trade-off worthwhile in the case of small messages.
+
+#### 512-byte file
+|                        Method |     Mean |     Error |    StdDev |
+|:----------------------------: |:--------:|:---------:|:---------:|
+|      ChaCha20-BLAKE2b.Encrypt | 1.404 us | 0.0047 us | 0.0044 us |
+|      ChaCha20-BLAKE2b.Decrypt | 1.453 us | 0.0024 us | 0.0022 us |
+|     XChaCha20-BLAKE2b.Encrypt | 1.494 us | 0.0073 us | 0.0068 us |
+|     XChaCha20-BLAKE2b.Decrypt | 1.548 us | 0.0050 us | 0.0044 us |
+| XChaCha20-BLAKE2b-SIV.Encrypt | 1.474 us | 0.0045 us | 0.0038 us |
+| XChaCha20-BLAKE2b-SIV.Decrypt | 1.538 us | 0.0034 us | 0.0030 us |
+|  ChaCha20-Poly1305.Encrypt | 779.1 ns | 1.01 ns | 0.94 ns |
+|  ChaCha20-Poly1305.Decrypt | 795.3 ns | 0.92 ns | 0.77 ns |
+| XChaCha20-Poly1305.Encrypt | 865.5 ns | 1.24 ns | 1.10 ns |
+| XChaCha20-Poly1305.Decrypt | 883.8 ns | 1.25 ns | 1.11 ns |
+
+#### 16.1 KiB file
+|                        Method |     Mean |    Error |   StdDev |
+|:----------------------------: |:--------:|:--------:|:--------:|
+|      ChaCha20-BLAKE2b.Encrypt | 17.39 us | 0.071 us | 0.063 us |
+|      ChaCha20-BLAKE2b.Decrypt | 17.44 us | 0.026 us | 0.022 us |
+|     XChaCha20-BLAKE2b.Encrypt | 17.46 us | 0.132 us | 0.124 us |
+|     XChaCha20-BLAKE2b.Decrypt | 17.58 us | 0.125 us | 0.117 us |
+| XChaCha20-BLAKE2b-SIV.Encrypt | 17.43 us | 0.148 us | 0.138 us |
+| XChaCha20-BLAKE2b-SIV.Decrypt | 17.42 us | 0.024 us | 0.018 us |
+|  ChaCha20-Poly1305.Encrypt | 16.97 us | 0.107 us | 0.100 us |
+|  ChaCha20-Poly1305.Decrypt | 16.97 us | 0.042 us | 0.035 us |
+| XChaCha20-Poly1305.Encrypt | 16.94 us | 0.029 us | 0.023 us |
+| XChaCha20-Poly1305.Decrypt | 17.04 us | 0.024 us | 0.018 us |
+
+#### 31.6 KiB file
+|                        Method |     Mean |    Error |   StdDev |
+|:----------------------------: |:--------:|:--------:|:--------:|
+|      ChaCha20-BLAKE2b.Encrypt | 33.12 us | 0.314 us | 0.293 us |
+|      ChaCha20-BLAKE2b.Decrypt | 33.14 us | 0.040 us | 0.031 us |
+|     XChaCha20-BLAKE2b.Encrypt | 32.96 us | 0.042 us | 0.035 us |
+|     XChaCha20-BLAKE2b.Decrypt | 33.34 us | 0.194 us | 0.181 us |
+| XChaCha20-BLAKE2b-SIV.Encrypt | 33.13 us | 0.069 us | 0.057 us |
+| XChaCha20-BLAKE2b-SIV.Decrypt | 33.31 us | 0.207 us | 0.193 us |
+|  ChaCha20-Poly1305.Encrypt | 32.50 us | 0.093 us | 0.078 us |
+|  ChaCha20-Poly1305.Decrypt | 32.48 us | 0.153 us | 0.143 us |
+| XChaCha20-Poly1305.Encrypt | 32.48 us | 0.019 us | 0.016 us |
+| XChaCha20-Poly1305.Decrypt | 32.68 us | 0.149 us | 0.140 us |
+
+#### 64.7 KiB file
+|                        Method |     Mean |    Error |   StdDev |
+|:----------------------------: |:--------:|:--------:|:--------:|
+|      ChaCha20-BLAKE2b.Encrypt | 66.14 us | 0.179 us | 0.139 us |
+|      ChaCha20-BLAKE2b.Decrypt | 67.12 us | 0.570 us | 0.533 us |
+|     XChaCha20-BLAKE2b.Encrypt | 66.80 us | 0.575 us | 0.538 us |
+|     XChaCha20-BLAKE2b.Decrypt | 66.87 us | 0.104 us | 0.081 us |
+| XChaCha20-BLAKE2b-SIV.Encrypt | 66.32 us | 0.104 us | 0.087 us |
+| XChaCha20-BLAKE2b-SIV.Decrypt | 66.56 us | 0.177 us | 0.147 us |
+|  ChaCha20-Poly1305.Encrypt | 66.32 us | 0.273 us | 0.256 us |
+|  ChaCha20-Poly1305.Decrypt | 66.01 us | 0.079 us | 0.062 us |
+| XChaCha20-Poly1305.Encrypt | 66.32 us | 0.438 us | 0.410 us |
+| XChaCha20-Poly1305.Decrypt | 66.24 us | 0.244 us | 0.204 us |
+
+#### 129 KiB file
+|                        Method |     Mean |   Error |  StdDev |
+|:----------------------------: |:--------:|:-------:|:-------:|
+|      ChaCha20-BLAKE2b.Encrypt | 252.9 us | 0.45 us | 0.37 us |
+|      ChaCha20-BLAKE2b.Decrypt | 245.1 us | 0.50 us | 0.39 us |
+|     XChaCha20-BLAKE2b.Encrypt | 251.5 us | 1.65 us | 1.54 us |
+|     XChaCha20-BLAKE2b.Decrypt | 245.0 us | 0.51 us | 0.40 us |
+| XChaCha20-BLAKE2b-SIV.Encrypt | 251.7 us | 1.24 us | 1.16 us |
+| XChaCha20-BLAKE2b-SIV.Decrypt | 244.6 us | 1.23 us | 1.09 us |
+|  ChaCha20-Poly1305.Encrypt | 184.4 us | 0.29 us | 0.23 us |
+|  ChaCha20-Poly1305.Decrypt | 184.8 us | 1.08 us | 0.96 us |
+| XChaCha20-Poly1305.Encrypt | 185.0 us | 1.07 us | 1.00 us |
+| XChaCha20-Poly1305.Decrypt | 184.9 us | 0.35 us | 0.31 us |
+
+#### 34.1 MiB file
+|                        Method |     Mean |    Error |   StdDev |
+|:----------------------------: |:--------:|:--------:|:--------:|
+|      ChaCha20-BLAKE2b.Encrypt | 58.14 ms | 0.340 ms | 0.284 ms |
+|      ChaCha20-BLAKE2b.Decrypt | 65.02 ms | 0.314 ms | 0.294 ms |
+|     XChaCha20-BLAKE2b.Encrypt | 66.56 ms | 0.270 ms | 0.253 ms |
+|     XChaCha20-BLAKE2b.Decrypt | 65.25 ms | 0.254 ms | 0.237 ms |
+| XChaCha20-BLAKE2b-SIV.Encrypt | 66.27 ms | 0.719 ms | 0.600 ms |
+| XChaCha20-BLAKE2b-SIV.Decrypt | 64.03 ms | 0.149 ms | 0.116 ms |
+|  ChaCha20-Poly1305.Encrypt | 52.99 ms | 0.169 ms | 0.141 ms |
+|  ChaCha20-Poly1305.Decrypt | 52.74 ms | 0.104 ms | 0.093 ms |
+| XChaCha20-Poly1305.Encrypt | 52.96 ms | 0.111 ms | 0.093 ms |
+| XChaCha20-Poly1305.Decrypt | 52.65 ms | 0.183 ms | 0.153 ms |
