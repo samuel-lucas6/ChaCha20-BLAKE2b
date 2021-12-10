@@ -107,7 +107,7 @@ byte[] plaintext = XChaCha20BLAKE2bSIV.Decrypt(ciphertext, key, additionalData);
 ```
 
 ## Benchmarks
-The following benchmarks were done using [BenchmarkDotNet](https://benchmarkdotnet.org/) in a .NET 6 console application with 16 bytes of additional data.
+The following benchmarks were done using [BenchmarkDotNet](https://benchmarkdotnet.org/) in a .NET 6 console application with 16 bytes of additional data and the default 256-bit tag size.
 
 In sum, (X)ChaCha20-BLAKE2b is almost identical in speed to (X)ChaCha20-Poly1305 for 16-64 KiB messages, which is perfect since these are ideal chunk sizes for performing [chunked encryption](https://www.imperialviolet.org/2014/06/27/streamingencryption.html).
 
