@@ -24,33 +24,33 @@ Finally, (X)ChaCha20-BLAKE2b is the ideal combination for an Encrypt-then-MAC sc
 
 ## Installation
 1. Install the [Sodium.Core](https://www.nuget.org/packages/Sodium.Core) NuGet package in [Visual Studio](https://docs.microsoft.com/en-us/nuget/quickstart/install-and-use-a-package-in-visual-studio).
-2. Download the latest [release](https://github.com/samuel-lucas6/ChaCha20-BLAKE2b/releases).
+2. Download the latest [release](https://github.com/samuel-lucas6/ChaCha20-BLAKE2b/releases/latest).
 3. Move the downloaded DLL file into your Visual Studio project folder.
 4. Click on the `Project` tab and `Add Project Reference...` in Visual Studio.
 5. Go to `Browse`, click the `Browse` button, and select the downloaded DLL file.
 6. Add `using ChaCha20BLAKE2;` to the top of each code file that will use the library.
 
+### Requirements
 Note that the [libsodium](https://doc.libsodium.org/) library requires the [Visual C++ Redistributable for Visual Studio 2015-2019](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads) to work on Windows. If you want your program to be portable, then you must keep the relevant (x86 or x64) `vcruntime140.dll` file in the same folder as your executable on Windows.
 
+## Usage
 ### ChaCha20
 ⚠️**WARNING: Never reuse a nonce with the same key.**
 ```c#
 const string message = "This is a test.";
-const int nonceLength = 8;
-const int keyLength = 32;
-const int version = 1;
+const string version = "ChaCha20BLAKE2b v2.0.0";
 
 // The message could be a file
 byte[] message = Encoding.UTF8.GetBytes(message);
 
 // The nonce should be a counter that gets incremented for each message encrypted using the same key
-byte[] nonce = new byte[nonceLength];
+byte[] nonce = new byte[ChaCha20BLAKE2b.NonceSize];
 
 // The key can be randomly generated using a CSPRNG or derived using a KDF (e.g. Argon2, HKDF, etc)
-byte[] key = SodiumCore.GetRandomBytes(keyLength);
+byte[] key = SodiumCore.GetRandomBytes(ChaCha20BLAKE2b.KeySize);
 
 // The additional data can be null but is ideal for file headers, version numbers, timestamps, etc
-byte[] additionalData = BitConverter.GetBytes(version);
+byte[] additionalData = Encoding.UTF8.GetBytes(version);
 
 // Encrypt the message and use a 256-bit authentication tag
 byte[] ciphertext = ChaCha20BLAKE2b.Encrypt(message, nonce, key, additionalData, TagLength.BLAKE2b256);
@@ -63,21 +63,19 @@ byte[] plaintext = ChaCha20BLAKE2b.Decrypt(ciphertext, nonce, key, additionalDat
 ⚠️**WARNING: Never reuse a nonce with the same key.**
 ```c#
 const string message = "This is a test.";
-const int nonceLength = 24;
-const int keyLength = 32;
-const int version = 1;
+const string version = "ChaCha20BLAKE2b v2.0.0";
 
 // The message could be a file
 byte[] message = Encoding.UTF8.GetBytes(message);
 
 // The nonce can be random. Increment or randomly generate the nonce for each message encrypted using the same key
-byte[] nonce = SodiumCore.GetRandomBytes(nonceLength);
+byte[] nonce = SodiumCore.GetRandomBytes(XChaCha20BLAKE2b.NonceSize);
 
 // The key can be randomly generated using a CSPRNG or derived using a KDF (e.g. Argon2, HKDF, etc)
-byte[] key = SodiumCore.GetRandomBytes(keyLength);
+byte[] key = SodiumCore.GetRandomBytes(XChaCha20BLAKE2b.KeySize);
 
 // The additional data can be null but is ideal for file headers, version numbers, timestamps, etc
-byte[] additionalData = BitConverter.GetBytes(version);
+byte[] additionalData = Encoding.UTF8.GetBytes(version);
 
 // Encrypt the message and use a 512-bit authentication tag
 byte[] ciphertext = XChaCha20BLAKE2b.Encrypt(message, nonce, key, additionalData, TagLength.BLAKE2b512);
@@ -87,23 +85,21 @@ byte[] plaintext = XChaCha20BLAKE2b.Decrypt(ciphertext, nonce, key, additionalDa
 ```
 
 ### XChaCha20-BLAKE2b-SIV
-⚠️**WARNING: A new key should be used for each message. Otherwise, you should include at least 16 bytes of unique, random data as part of the additional data to ensure semantic security.**
+⚠️**WARNING: A new key should be used for each message. If this is not possible, then you must include at least 16 bytes of unique, random data as part of the additional data.**
 
 ```c#
 const string filePath = "C:\\Users\\samuel-lucas6\\Pictures\\test.jpg";
-const int keyLength = 32;
-const int randomAdditionalDataLength = 32;
 
 // The message does not have to be a file
 byte[] message = File.ReadAllBytes(filePath);
 
 // The key can be randomly generated using a CSPRNG or derived using a KDF (e.g. Argon2, HKDF, etc)
-byte[] key = SodiumCore.GetRandomBytes(keyLength);
+byte[] key = SodiumCore.GetRandomBytes(XChaCha20BLAKE2bSIV.KeySize);
 
-// The additional data can be null, serve as the nonce, or be used for file headers, version numbers, timestamps, etc
-byte[] additionalData = SodiumCore.GetRandomBytes(randomAdditionalDataLength);
+// The additional data can be null or used for file headers, version numbers, timestamps, etc
+byte[] additionalData = SodiumCore.GetRandomBytes(XChaCha20BLAKE2bSIV.KeySize);
 
-// Encrypt the message
+// Encrypt the message and use the default authentication tag length (256-bit)
 byte[] ciphertext = XChaCha20BLAKE2bSIV.Encrypt(message, key, additionalData);
 
 // Decrypt the ciphertext
