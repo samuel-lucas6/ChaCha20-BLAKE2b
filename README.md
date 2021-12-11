@@ -20,7 +20,7 @@ This library was created because there are currently no standardised committing 
 
 Finally, (X)ChaCha20-BLAKE2b is the ideal combination for an Encrypt-then-MAC scheme because:
 1. ChaCha20 has a [higher security margin](https://eprint.iacr.org/2019/1492.pdf) than AES, performs well on older devices, and runs in [constant time](https://cr.yp.to/chacha/chacha-20080128.pdf), [unlike](https://cr.yp.to/antiforgery/cachetiming-20050414.pdf) AES.
-2. BLAKE2b provides a [similar security margin](https://eprint.iacr.org/2019/1492.pdf) to SHA3 whilst being considerably faster.
+2. BLAKE2b is as [secure](https://eprint.iacr.org/2019/1492.pdf) as SHA3 whilst being considerably faster.
 
 ## Installation
 1. Install the [Sodium.Core](https://www.nuget.org/packages/Sodium.Core) NuGet package in [Visual Studio](https://docs.microsoft.com/en-us/nuget/quickstart/install-and-use-a-package-in-visual-studio).
@@ -85,7 +85,7 @@ byte[] plaintext = XChaCha20BLAKE2b.Decrypt(ciphertext, nonce, key, additionalDa
 ```
 
 ### XChaCha20-BLAKE2b-SIV
-⚠️**WARNING: A new key should be used for each message. If this is not possible, then you must include at least 16 bytes of unique, random data as part of the additional data.**
+⚠️**WARNING: Never reuse a key. As a precaution, you can use at least 16 bytes of unique, random data as part of the additional data to act as a nonce.**
 
 ```c#
 const string filePath = "C:\\Users\\samuel-lucas6\\Pictures\\test.jpg";
@@ -96,8 +96,8 @@ byte[] message = File.ReadAllBytes(filePath);
 // The key can be randomly generated using a CSPRNG or derived using a KDF (e.g. Argon2, HKDF, etc)
 byte[] key = SodiumCore.GetRandomBytes(XChaCha20BLAKE2bSIV.KeySize);
 
-// The additional data can be null or used for file headers, version numbers, timestamps, etc
-byte[] additionalData = SodiumCore.GetRandomBytes(XChaCha20BLAKE2bSIV.KeySize);
+// The additional data can be null, used as a nonce, and/or used for file headers, version numbers, timestamps, etc
+byte[] additionalData = SodiumCore.GetRandomBytes(XChaCha20BLAKE2bSIV.KeySize / 2);
 
 // Encrypt the message and use the default authentication tag length (256-bit)
 byte[] ciphertext = XChaCha20BLAKE2bSIV.Encrypt(message, key, additionalData);
