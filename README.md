@@ -20,7 +20,7 @@ This library was created because there are currently no standardised committing 
 
 Finally, (X)ChaCha20-BLAKE2b is the ideal combination for an Encrypt-then-MAC scheme because:
 1. ChaCha20 has a [higher security margin](https://eprint.iacr.org/2019/1492.pdf) than AES, performs well on older devices, and runs in [constant time](https://cr.yp.to/chacha/chacha-20080128.pdf), [unlike](https://cr.yp.to/antiforgery/cachetiming-20050414.pdf) AES.
-2. BLAKE2b is as [secure](https://eprint.iacr.org/2019/1492.pdf) as SHA3 whilst being considerably faster.
+2. BLAKE2b is as real-world [secure](https://eprint.iacr.org/2019/1492.pdf) as SHA3 whilst being considerably [faster](https://www.blake2.net/). It relies on essentially the same core algorithm as BLAKE, which received a [significant amount of cryptanalysis](https://nvlpubs.nist.gov/nistpubs/ir/2012/NIST.IR.7896.pdf), even more than Keccak (the SHA3 finalist), as part of the [SHA3 competition](https://competitions.cr.yp.to/sha3.html).
 
 ## Installation
 1. Install the [Sodium.Core](https://www.nuget.org/packages/Sodium.Core) NuGet package in [Visual Studio](https://docs.microsoft.com/en-us/nuget/quickstart/install-and-use-a-package-in-visual-studio).
