@@ -113,7 +113,7 @@ In sum, (X)ChaCha20-BLAKE2b is almost identical in speed to (X)ChaCha20-Poly1305
 
 Chunked encryption should be preferred over encrypting large messages in one go because it reduces memory usage, allows earlier detection of corrupted chunks, may help reduce data loss, and reduces wiggle room for attacks in the case of popular AEADs (e.g. ChaCha20-Poly1305 and AES-GCM).
 
-However, (X)ChaCha20-BLAKE2b is slower than (X)ChaCha20-Poly1305 for small and large messages. With that said, you should perform chunked encryption on large messages anyway, rendering this result unimportant, and I would argue that the additional security makes this trade-off worthwhile in the case of small messages.
+However, (X)ChaCha20-BLAKE2b is slower than (X)ChaCha20-Poly1305 for small and large messages. With that said, you should perform chunked encryption on large messages anyway, rendering that finding unimportant, and I would argue that the additional security makes this trade-off worthwhile in the case of small messages.
 
 #### 512-byte file
 |                        Method |     Mean |     Error |    StdDev |
