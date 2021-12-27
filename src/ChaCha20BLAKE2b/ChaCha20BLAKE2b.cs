@@ -4,7 +4,7 @@ using Sodium;
 
 /*
     ChaCha20-BLAKE2b: Committing ChaCha20-BLAKE2b, XChaCha20-BLAKE2b, and XChaCha20-BLAKE2b-SIV AEAD implementations.
-    Copyright (c) 2021 Samuel Lucas
+    Copyright (c) 2021-2022 Samuel Lucas
 
     Permission is hereby granted, free of charge, to any person obtaining a copy of
     this software and associated documentation files (the "Software"), to deal in
@@ -31,8 +31,8 @@ namespace ChaCha20BLAKE2
     {
         public const int KeySize = Constants.EncryptionKeySize;
         public const int NonceSize = Constants.ChaCha20NonceSize;
-        private static readonly byte[] _encryptionContext = Encoding.UTF8.GetBytes("ChaCha20-BLAKE2b 07/12/2021 20:40 ChaCha20.Encrypt()");
-        private static readonly byte[] _authenticationContext = Encoding.UTF8.GetBytes("ChaCha20-BLAKE2b 07/12/2021 20:41 BLAKE2b.KeyedHash()");
+        private static readonly byte[] EncryptionContext = Encoding.UTF8.GetBytes("ChaCha20-BLAKE2b 07/12/2021 20:40 ChaCha20.Encrypt()");
+        private static readonly byte[] AuthenticationContext = Encoding.UTF8.GetBytes("ChaCha20-BLAKE2b 07/12/2021 20:41 BLAKE2b.KeyedHash()");
 
         public static byte[] Encrypt(byte[] message, byte[] nonce, byte[] key, byte[] additionalData = null, TagLength tagLength = TagLength.BLAKE2b256)
         {
@@ -40,7 +40,7 @@ namespace ChaCha20BLAKE2
             ParameterValidation.Nonce(nonce, Constants.ChaCha20NonceSize);
             ParameterValidation.Key(key, Constants.EncryptionKeySize);
             additionalData = ParameterValidation.AdditionalData(additionalData);
-            (byte[] encryptionKey, byte[] macKey) = KeyDerivation.DeriveKeys(key, nonce, _encryptionContext, _authenticationContext);
+            (byte[] encryptionKey, byte[] macKey) = KeyDerivation.DeriveKeys(key, nonce, EncryptionContext, AuthenticationContext);
             byte[] ciphertext = StreamEncryption.EncryptChaCha20(message, nonce, encryptionKey);
             byte[] tag = Tag.Calculate(ciphertext, additionalData, macKey, (int)tagLength);
             return Arrays.Concat(ciphertext, tag);
@@ -52,7 +52,7 @@ namespace ChaCha20BLAKE2
             ParameterValidation.Nonce(nonce, Constants.ChaCha20NonceSize);
             ParameterValidation.Key(key, Constants.EncryptionKeySize);
             additionalData = ParameterValidation.AdditionalData(additionalData);
-            (byte[] encryptionKey, byte[] macKey) = KeyDerivation.DeriveKeys(key, nonce, _encryptionContext, _authenticationContext);
+            (byte[] encryptionKey, byte[] macKey) = KeyDerivation.DeriveKeys(key, nonce, EncryptionContext, AuthenticationContext);
             byte[] tag = Tag.Read(ciphertext, (int)tagLength);
             byte[] ciphertextWithoutTag = Tag.Remove(ciphertext, (int)tagLength);
             byte[] computedTag = Tag.Calculate(ciphertextWithoutTag, additionalData, macKey, (int)tagLength);

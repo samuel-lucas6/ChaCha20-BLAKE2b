@@ -4,13 +4,13 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Description>Committing ChaCha20-BLAKE2b, XChaCha20-BLAKE2b, and XChaCha20-BLAKE2b-SIV AEAD implementations.</Description>
-    <Copyright>Copyright (c) 2021 Samuel Lucas</Copyright>
+    <Copyright>Copyright (c) 2021-2022 Samuel Lucas</Copyright>
     <Authors>Samuel Lucas</Authors>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <RootNamespace>ChaCha20BLAKE2</RootNamespace>
     <AssemblyName>ChaCha20BLAKE2b</AssemblyName>
-    <Version>2.0.0</Version>
+    <Version>2.0.1</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageProjectUrl>https://github.com/samuel-lucas6/ChaCha20-BLAKE2b</PackageProjectUrl>

@@ -4,7 +4,7 @@ using Sodium;
 
 /*
     ChaCha20-BLAKE2b: Committing ChaCha20-BLAKE2b, XChaCha20-BLAKE2b, and XChaCha20-BLAKE2b-SIV AEAD implementations.
-    Copyright (c) 2021 Samuel Lucas
+    Copyright (c) 2021-2022 Samuel Lucas
 
     Permission is hereby granted, free of charge, to any person obtaining a copy of
     this software and associated documentation files (the "Software"), to deal in
@@ -30,15 +30,15 @@ namespace ChaCha20BLAKE2
     public static class XChaCha20BLAKE2bSIV
     {
         public const int KeySize = Constants.EncryptionKeySize;
-        private static readonly byte[] _encryptionContext = Encoding.UTF8.GetBytes("XChaCha20-BLAKE2b-SIV 07/12/2021 20:51 XChaCha20.Encrypt()");
-        private static readonly byte[] _authenticationContext = Encoding.UTF8.GetBytes("XChaCha20-BLAKE2b-SIV 07/12/2021 20:52 BLAKE2b.KeyedHash()");
+        private static readonly byte[] EncryptionContext = Encoding.UTF8.GetBytes("XChaCha20-BLAKE2b-SIV 07/12/2021 20:51 XChaCha20.Encrypt()");
+        private static readonly byte[] AuthenticationContext = Encoding.UTF8.GetBytes("XChaCha20-BLAKE2b-SIV 07/12/2021 20:52 BLAKE2b.KeyedHash()");
 
         public static byte[] Encrypt(byte[] message, byte[] key, byte[] additionalData = null, TagLength tagLength = TagLength.BLAKE2b256)
         {
             ParameterValidation.Message(message);
             ParameterValidation.Key(key, Constants.EncryptionKeySize);
             additionalData = ParameterValidation.AdditionalData(additionalData);
-            (byte[] encryptionKey, byte[] macKey) = KeyDerivation.DeriveKeys(key, nonce: null, _encryptionContext, _authenticationContext);
+            (byte[] encryptionKey, byte[] macKey) = KeyDerivation.DeriveKeys(key, nonce: null, EncryptionContext, AuthenticationContext);
             byte[] tag = Tag.Calculate(message, additionalData, macKey, (int)tagLength);
             byte[] nonce = Tag.GetNonce(tag);
             byte[] ciphertext = StreamEncryption.EncryptXChaCha20(message, nonce, encryptionKey);
@@ -50,20 +50,17 @@ namespace ChaCha20BLAKE2
             ParameterValidation.Ciphertext(ciphertext, (int)tagLength);
             ParameterValidation.Key(key, Constants.EncryptionKeySize);
             additionalData = ParameterValidation.AdditionalData(additionalData);
-            (byte[] encryptionKey, byte[] macKey) = KeyDerivation.DeriveKeys(key, nonce: null, _encryptionContext, _authenticationContext);
+            (byte[] encryptionKey, byte[] macKey) = KeyDerivation.DeriveKeys(key, nonce: null, EncryptionContext, AuthenticationContext);
             byte[] tag = Tag.Read(ciphertext, (int)tagLength);
             byte[] ciphertextWithoutTag = Tag.Remove(ciphertext, (int)tagLength);
             byte[] nonce = Tag.GetNonce(tag);
             byte[] message = StreamEncryption.DecryptXChaCha20(ciphertextWithoutTag, nonce, encryptionKey);
             byte[] computedTag = Tag.Calculate(message, additionalData, macKey, (int)tagLength);
             bool validTag = Utilities.Compare(tag, computedTag);
-            if (!validTag)
-            {
-                Arrays.ZeroMemory(message);
-                Arrays.ZeroMemory(computedTag);
-                throw new CryptographicException();
-            }
-            return message;
+            if (validTag) { return message; }
+            Arrays.ZeroMemory(message);
+            Arrays.ZeroMemory(computedTag);
+            throw new CryptographicException();
         }
     }
 }
