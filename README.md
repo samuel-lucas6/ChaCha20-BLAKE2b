@@ -25,20 +25,20 @@ Finally, (X)ChaCha20-BLAKE2b is the ideal combination for an Encrypt-then-MAC sc
 ## Installation
 1. Install the [Sodium.Core](https://www.nuget.org/packages/Sodium.Core) NuGet package in [Visual Studio](https://docs.microsoft.com/en-us/nuget/quickstart/install-and-use-a-package-in-visual-studio).
 2. Download the latest [release](https://github.com/samuel-lucas6/ChaCha20-BLAKE2b/releases/latest).
-3. Move the downloaded DLL file into your Visual Studio project folder.
+3. Move the downloaded `.dll` file into your Visual Studio project folder.
 4. Click on the `Project` tab and `Add Project Reference...` in Visual Studio.
-5. Go to `Browse`, click the `Browse` button, and select the downloaded DLL file.
+5. Go to `Browse`, click the `Browse` button, and select the downloaded `.dll` file.
 6. Add `using ChaCha20BLAKE2;` to the top of each code file that will use the library.
 
 ### Requirements
 Note that the [libsodium](https://doc.libsodium.org/) library requires the [Visual C++ Redistributable for Visual Studio 2015-2019](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads) to work on Windows. If you want your program to be portable, then you must keep the relevant (x86 or x64) `vcruntime140.dll` file in the same folder as your executable on Windows.
 
 ## Usage
-### ChaCha20
+### ChaCha20-BLAKE2b
 ⚠️**WARNING: Never reuse a nonce with the same key.**
 ```c#
 const string message = "This is a test.";
-const string version = "ChaCha20BLAKE2b v2.0.0";
+const string version = "application v2.0.0";
 
 // The message could be a file
 byte[] message = Encoding.UTF8.GetBytes(message);
@@ -59,11 +59,11 @@ byte[] ciphertext = ChaCha20BLAKE2b.Encrypt(message, nonce, key, additionalData,
 byte[] plaintext = ChaCha20BLAKE2b.Decrypt(ciphertext, nonce, key, additionalData, TagLength.BLAKE2b256);
 ```
 
-### XChaCha20
+### XChaCha20-BLAKE2b
 ⚠️**WARNING: Never reuse a nonce with the same key.**
 ```c#
 const string message = "This is a test.";
-const string version = "ChaCha20BLAKE2b v2.0.0";
+const string version = "application v2.0.0";
 
 // The message could be a file
 byte[] message = Encoding.UTF8.GetBytes(message);
