@@ -17,7 +17,7 @@
     <RepositoryUrl>https://github.com/samuel-lucas6/ChaCha20-BLAKE2b</RepositoryUrl>
     <ErrorReport>none</ErrorReport>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>cryptography;crypto;chacha20;xchacha20;xchacha20-siv;blake2;blake2b;chacha20-blake2b;xchacha20-blake2b;xchacha20-blake2b-siv</PackageTags>
+    <PackageTags>libsodium cryptography crypto encryption authenticated-encryption aead Encrypt-then-MAC ChaCha20-BLAKE2b XChaCha20-BLAKE2b XChaCha20-BLAKE2b-SIV ChaCha20 XChaCha20 SIV XChaCha20-SIV BLAKE2 BLAKE2b BLAKE2b256 BLAKE2b384 BLAKE2b512</PackageTags>
     <AnalysisLevel>latest</AnalysisLevel>
   </PropertyGroup>
 
